@@ -65,5 +65,11 @@ with tracer.start_as_current_span(scenario):
             run = project_client.agents.get_run(thread_id=thread.id, run_id=run.id)
             print(f"[yellow]Run status: {run.status}[/yellow]")
 
+        # Get all messages and print only the final assistant answer.
         messages = project_client.agents.list_messages(thread_id=thread.id)
-        print(f"[blue]messages: {messages}[/blue]")
+        final_answer = next(
+            (msg['content'][0]['text']['value'] for msg in messages['data']
+             if msg['role'] == 'assistant' and msg.get('assistant_id')), 
+            "No answer received"
+        )
+        print(f"[blue]Final answer: {final_answer}[/blue]")
